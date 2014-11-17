@@ -1,5 +1,9 @@
 Revision history for Perl extension Types::Git.
 
+0.02      2014-11-16
+- Add the GitSHA, GitLooseRef, GitBranchRef, GitTagRef, GitObject,
+  and GitRevision types.
+
 0.01      2014-11-16
  - First release.
 

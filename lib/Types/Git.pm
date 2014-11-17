@@ -1,5 +1,5 @@
 package Types::Git;
-$Types::Git::VERSION = '0.01';
+$Types::Git::VERSION = '0.02';
 =head1 NAME
 
 Types::Git - Type::Tiny types for git stuff.
@@ -21,8 +21,8 @@ Types::Git - Type::Tiny types for git stuff.
 
 =head1 DESCRIPTION
 
-This module provides several (well, one, currently) L<Type::Tiny>
-types for several of git's data types.
+This module provides several L<Type::Tiny> types for some of
+git's data types.
 
 =cut
 
@@ -36,22 +36,34 @@ use namespace::clean;
 
 =head1 TYPES
 
-=head2 GitRef
+=head2 GitSHA
 
-Matches a ref against the same rules that
-L<git-check-ref-format|http://git-scm.com/docs/git-check-ref-format> uses.
+A SHA1 hex, must be 40 characters or less long and contain
+only hex characters.
 
 =cut
 
-my $GitRef = declare 'GitRef',
+my $GitSHA = declare 'GitSHA',
+    as NonEmptySimpleStr,
+    where {
+        length($_) <= 40 and
+        $_ =~ m{^[a-f0-9]+$}
+    };
+
+=head2 GitLooseRef
+
+Just like L</GitRef> except one-level refs (those without any forward slashes)
+are allowed.  This is useful for validating a branch or tag name.
+
+=cut
+
+my $GitLooseRef = declare 'GitLooseRef',
     as NonEmptySimpleStr,
     where {
         # 1. They can include slash / for hierarchical (directory) grouping,
         #    but no slash-separated component can begin with a dot . or end
         #    with the sequence .lock.
         ( ! any { $_ =~ m{^\.} or $_ =~ m{\.lock$} } split(/\//, $_) ) and
-        # 2. They must contain at least one /.
-        $_ =~ m{/} and
         # 3. They cannot have two consecutive dots .. anywhere.
         $_ !~ m{\.\.} and
         # 4. They cannot have ASCII control characters (i.e. bytes whose
@@ -73,6 +85,69 @@ my $GitRef = declare 'GitRef',
         # 10. They cannot contain a \.
         $_ !~ m{\\}
     };
+
+=head2 GitRef
+
+Matches a ref against the same rules that
+L<git-check-ref-format|http://git-scm.com/docs/git-check-ref-format> uses.
+
+=cut
+
+my $GitRef = declare 'GitRef',
+    as $GitLooseRef,
+    where {
+        # 2. They must contain at least one /.
+        $_ =~ m{/}
+    };
+
+=head2 GitBranchRef
+
+A L</GitRef> which begins with C<refs/heads/> and ends with a
+L</GitLooseRef>.
+
+=cut
+
+declare 'GitBranchRef',
+    as $GitRef,
+    where { $_ =~ m{^refs/heads/} };
+
+=head2 GitTagRef
+
+A L</GitRef> which begins with C<refs/tags/> and ends with a
+L</GitLooseRef>.
+
+=cut
+
+declare 'GitTagRef',
+    as $GitRef,
+    where { $_ =~ m{^refs/tags/} };
+
+=head2 GitObject
+
+This is a union type of L</GitSHA> and L</GitLooseRef>.  In the future
+this type may be expanded to include other types as more of
+L<gitrevisions|http://git-scm.com/docs/gitrevisions> is incorporated
+with this module.
+
+=cut
+
+my $GitObject = declare 'GitObject',
+    as $GitSHA | $GitLooseRef;
+
+=head2 GitRevision
+
+Currenlty this is an alias for L</GitObject> but may be extended in
+the future to include other types as more of
+L<gitrevisions|http://git-scm.com/docs/gitrevisions> is incorporated
+with this module.
+
+This type is meant to be the same as L</GitObject> except with extended
+rules for date ranges and such.
+
+=cut
+
+my $GitRevision = declare 'GitRevision',
+    as $GitObject;
 
 1;
 __END__
