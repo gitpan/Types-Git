@@ -21,6 +21,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "Types::Git",
   "PREREQ_PM" => {
+    "List::MoreUtils" => "0.28",
     "Type::Tiny" => 1,
     "namespace::clean" => 0,
     "strictures" => 0
@@ -28,7 +29,7 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "Test::Simple" => "0.94"
   },
-  "VERSION" => "0.02",
+  "VERSION" => "0.03",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -36,6 +37,7 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "List::MoreUtils" => "0.28",
   "Test::Simple" => "0.94",
   "Type::Tiny" => 1,
   "namespace::clean" => 0,

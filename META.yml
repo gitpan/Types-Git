@@ -14,6 +14,7 @@ meta-spec:
   version: '1.4'
 name: Types-Git
 requires:
+  List::MoreUtils: '0.28'
   Type::Tiny: '1'
   namespace::clean: '0'
   strictures: '0'
@@ -21,4 +22,4 @@ resources:
   bugtracker: https://github.com/bluefeet/Types-Git/issues
   homepage: https://github.com/bluefeet/Types-Git
   repository: https://github.com/bluefeet/Types-Git.git
-version: '0.02'
+version: '0.03'

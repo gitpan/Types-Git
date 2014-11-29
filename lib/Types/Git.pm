@@ -1,5 +1,5 @@
 package Types::Git;
-$Types::Git::VERSION = '0.02';
+$Types::Git::VERSION = '0.03';
 =head1 NAME
 
 Types::Git - Type::Tiny types for git stuff.
